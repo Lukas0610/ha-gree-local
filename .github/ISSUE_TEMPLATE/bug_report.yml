@@ -1,0 +1,41 @@
+name: Bug report
+description: Something does not work with your Gree unit
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Integration version
+      description: Settings → Marketplace → Gree Local
+    validations:
+      required: true
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant version
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Unit brand / model
+      placeholder: e.g. Gree Pular, Cooper&Hunter Alpha, Sinclair Terrel
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: >-
+        Settings → Devices & services → Gree Local → ⋮ → Download diagnostics,
+        then drag the file here. Keys, MAC and IP are removed automatically.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Debug log
+      description: Enable debug logging on the integration page, reproduce, then paste the relevant lines.
+      render: text

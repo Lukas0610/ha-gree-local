@@ -1,0 +1,17 @@
+{
+  "entity": {
+    "switch": {
+      "light": {
+        "default": "mdi:lightbulb-outline",
+        "state": { "on": "mdi:lightbulb-on" }
+      },
+      "xfan": { "default": "mdi:fan-clock" },
+      "health": { "default": "mdi:shimmer" },
+      "fresh_air": { "default": "mdi:air-filter" },
+      "quiet": {
+        "default": "mdi:volume-high",
+        "state": { "on": "mdi:volume-off" }
+      }
+    }
+  }
+}

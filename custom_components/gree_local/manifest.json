@@ -1,0 +1,17 @@
+{
+  "domain": "gree_local",
+  "name": "Gree Local",
+  "codeowners": ["@Lukas0610"],
+  "config_flow": true,
+  "dhcp": [
+    { "macaddress": "F4911E*" },
+    { "registered_devices": true }
+  ],
+  "documentation": "https://github.com/Lukas0610/ha-gree-local",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/Lukas0610/ha-gree-local/issues",
+  "loggers": ["custom_components.gree_local"],
+  "requirements": [],
+  "version": "0.1.0"
+}

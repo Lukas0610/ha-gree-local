@@ -1,0 +1,92 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "Gree-Gerät hinzufügen",
+        "description": "Gib die IP-Adresse des Geräts ein. Reserviere sie im Router per DHCP, damit sie sich nicht ändert.",
+        "data": {
+          "host": "IP-Adresse oder Hostname",
+          "port": "Port"
+        },
+        "data_description": {
+          "host": "Das Gerät muss bereits im WLAN sein (einmalig mit der Gree+- oder EWPE-Smart-App koppeln).",
+          "port": "Auf 7000 lassen, außer du leitest den Port um."
+        }
+      },
+      "discovery_confirm": {
+        "description": "{name} unter {host} einrichten?"
+      },
+      "reconfigure": {
+        "title": "Adresse ändern",
+        "data": {
+          "host": "IP-Adresse oder Hostname",
+          "port": "Port"
+        },
+        "data_description": {
+          "host": "Die neue IP-Adresse oder der neue Hostname des Geräts.",
+          "port": "Auf 7000 lassen, außer du leitest den Port um."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Keine Antwort vom Gerät. Prüfe die IP-Adresse und ob UDP-Port 7000 erreichbar ist.",
+      "cannot_bind": "Das Gerät antwortet, verweigert aber die Kopplung. Gerät kurz stromlos machen und erneut versuchen."
+    },
+    "abort": {
+      "already_configured": "Dieses Gerät ist bereits eingerichtet.",
+      "not_gree": "Das gefundene Gerät verhält sich nicht wie ein Gree-Gerät.",
+      "reconfigure_successful": "Die Adresse wurde aktualisiert.",
+      "wrong_device": "Unter dieser Adresse befindet sich ein anderes Gerät."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Optionen",
+        "data": {
+          "scan_interval": "Abfrageintervall"
+        },
+        "data_description": {
+          "scan_interval": "Wie oft der Gerätezustand gelesen wird. Änderungen über die Fernbedienung erscheinen spätestens nach dieser Zeit."
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "gree": {
+        "state_attributes": {
+          "fan_mode": {
+            "state": {
+              "auto": "Automatisch",
+              "low": "Niedrig",
+              "medium_low": "Mittel-niedrig",
+              "medium": "Mittel",
+              "medium_high": "Mittel-hoch",
+              "high": "Hoch"
+            }
+          }
+        }
+      }
+    },
+    "sensor": {
+      "outdoor_temperature": { "name": "Außentemperatur" }
+    },
+    "switch": {
+      "light": { "name": "Display-Beleuchtung" },
+      "xfan": { "name": "X-Fan" },
+      "health": { "name": "Health" },
+      "fresh_air": { "name": "Frischluft" },
+      "quiet": { "name": "Leise" }
+    }
+  },
+  "exceptions": {
+    "command_failed": {
+      "message": "Befehl an das Gree-Gerät unter {host} fehlgeschlagen: {error}"
+    },
+    "update_failed": {
+      "message": "Gree-Gerät unter {host} nicht erreichbar: {error}"
+    }
+  }
+}

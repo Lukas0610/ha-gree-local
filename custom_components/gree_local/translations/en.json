@@ -1,0 +1,92 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "Add Gree unit",
+        "description": "Enter the IP address of the unit. Give it a DHCP reservation in your router so the address stays stable.",
+        "data": {
+          "host": "IP address or hostname",
+          "port": "Port"
+        },
+        "data_description": {
+          "host": "The unit must already be on your Wi-Fi (pair it once with the Gree+ or EWPE Smart app).",
+          "port": "Leave at 7000 unless you forward the port."
+        }
+      },
+      "discovery_confirm": {
+        "description": "Set up {name} at {host}?"
+      },
+      "reconfigure": {
+        "title": "Change address",
+        "data": {
+          "host": "IP address or hostname",
+          "port": "Port"
+        },
+        "data_description": {
+          "host": "The new IP address or hostname of the unit.",
+          "port": "Leave at 7000 unless you forward the port."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "No answer from the unit. Check the IP address and that UDP port 7000 is reachable.",
+      "cannot_bind": "The unit answered but refused to pair. Power-cycle it and try again."
+    },
+    "abort": {
+      "already_configured": "This unit is already configured.",
+      "not_gree": "The discovered device did not respond like a Gree unit.",
+      "reconfigure_successful": "The address was updated.",
+      "wrong_device": "That address belongs to a different unit."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "scan_interval": "Polling interval"
+        },
+        "data_description": {
+          "scan_interval": "How often to read the unit's state. Changes made with the remote show up after at most this long."
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "gree": {
+        "state_attributes": {
+          "fan_mode": {
+            "state": {
+              "auto": "Auto",
+              "low": "Low",
+              "medium_low": "Medium-low",
+              "medium": "Medium",
+              "medium_high": "Medium-high",
+              "high": "High"
+            }
+          }
+        }
+      }
+    },
+    "sensor": {
+      "outdoor_temperature": { "name": "Outdoor temperature" }
+    },
+    "switch": {
+      "light": { "name": "Panel light" },
+      "xfan": { "name": "X-Fan" },
+      "health": { "name": "Health" },
+      "fresh_air": { "name": "Fresh air" },
+      "quiet": { "name": "Quiet" }
+    }
+  },
+  "exceptions": {
+    "command_failed": {
+      "message": "Failed to send command to the Gree unit at {host}: {error}"
+    },
+    "update_failed": {
+      "message": "Cannot reach the Gree unit at {host}: {error}"
+    }
+  }
+}
