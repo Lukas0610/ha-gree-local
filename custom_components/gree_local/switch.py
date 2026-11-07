@@ -47,7 +47,7 @@ class GreeSwitch(GreeEntity, SwitchEntity):
     def __init__(self, coordinator: GreeCoordinator, description: GreeSwitchDescription) -> None:
         super().__init__(coordinator)
         self.entity_description = description
-        self._attr_unique_id = f"{self._mac}_{description.key}"
+        self._attr_unique_id = f"{self._uid}_{description.key}"
 
     @property
     def is_on(self) -> bool:

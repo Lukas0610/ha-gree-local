@@ -57,8 +57,14 @@ weren't exercised against a real HA instance.
   Custom strings only where HA has no standard (e.g. fan speeds `medium_low`/`medium_high`).
 - **Every user-facing string goes in BOTH `translations/en.json` and `translations/de.json`.**
   The key structure must match. German uses informal "du".
-- unique_id = `format_mac(mac from scan reply)`. The device also gets a `CONNECTION_NETWORK_MAC`
-  connection, which the manifest's DHCP `registered_devices` matcher relies on. Don't remove it.
+- unique_id = `format_mac(mac from scan reply)` at setup and **never changes**. Device identifiers
+  and entity unique IDs derive from `entry.unique_id` (`GreeEntity._uid`), not from
+  `entry.data[CONF_MAC]`, because the MAC, key and cipher are user-editable in the reconfigure
+  flow ("Connection details" section). The device also gets a `CONNECTION_NETWORK_MAC`
+  connection from the current MAC, which the manifest's DHCP `registered_devices` matcher
+  relies on. Don't remove it.
+- Reconfigure verifies before saving: scan (must match unique_id unless the MAC was edited), then
+  a status request with the given key, or a fresh bind if the key field is empty.
 - Commands go through `coordinator.async_send(params)`. It applies the change optimistically,
   so don't call `async_request_refresh()` after it.
 - The update listener in `__init__.py` only changes the polling interval. It also fires when the

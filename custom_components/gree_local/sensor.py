@@ -65,7 +65,7 @@ class GreeSensor(GreeEntity, SensorEntity):
     def __init__(self, coordinator: GreeCoordinator, description: GreeSensorDescription) -> None:
         super().__init__(coordinator)
         self.entity_description = description
-        self._attr_unique_id = f"{self._mac}_{description.key}"
+        self._attr_unique_id = f"{self._uid}_{description.key}"
 
     @property
     def native_value(self) -> int | None:

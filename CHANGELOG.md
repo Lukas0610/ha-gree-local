@@ -8,6 +8,8 @@ each `## [x.y.z]` section becomes the GitHub release notes.
 ### Added
 - Renaming the device also renames the integration entry. Clearing the custom name restores the
   original name. Existing entries are migrated automatically.
+- Reconfigure shows the MAC address, device key and encryption in a "Connection details" section
+  and lets you change them. Changes are verified against the unit before they are saved.
 
 ### Changed
 - Default polling interval is now 5 s (was 30 s); the minimum is 1 s (was 10 s). Units with a

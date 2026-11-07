@@ -26,12 +26,31 @@
         "data_description": {
           "host": "Die neue IP-Adresse oder der neue Hostname des Geräts.",
           "port": "Auf 7000 lassen, außer du leitest den Port um."
+        },
+        "sections": {
+          "connection": {
+            "name": "Verbindungsdetails",
+            "description": "Werden normalerweise automatisch eingerichtet. Ändere sie nur, wenn du weißt, dass die Werte falsch sind.",
+            "data": {
+              "mac": "MAC-Adresse",
+              "key": "Geräteschlüssel",
+              "cipher": "Verschlüsselung"
+            },
+            "data_description": {
+              "mac": "Adresse für die Protokollnachrichten. Leer lassen, um die vom Gerät gemeldete zu verwenden.",
+              "key": "16-stelliger Schlüssel aus der Kopplung. Leer lassen, um neu zu koppeln und einen neuen Schlüssel zu erhalten.",
+              "cipher": "ECB für ältere, GCM für neuere Firmware. Wird beim Neukoppeln ignoriert."
+            }
+          }
         }
       }
     },
     "error": {
       "cannot_connect": "Keine Antwort vom Gerät. Prüfe die IP-Adresse und ob UDP-Port 7000 erreichbar ist.",
-      "cannot_bind": "Das Gerät antwortet, verweigert aber die Kopplung. Gerät kurz stromlos machen und erneut versuchen."
+      "cannot_bind": "Das Gerät antwortet, verweigert aber die Kopplung. Gerät kurz stromlos machen und erneut versuchen.",
+      "invalid_key": "Das Gerät ist erreichbar, hat den Schlüssel aber nicht akzeptiert. Prüfe Schlüssel, Verschlüsselung und MAC-Adresse oder lass den Schlüssel leer, um neu zu koppeln.",
+      "invalid_key_format": "Der Geräteschlüssel muss genau 16 Zeichen lang sein.",
+      "invalid_mac": "Die MAC-Adresse muss aus 12 Hexadezimalziffern bestehen, z. B. f4:91:1e:12:34:56."
     },
     "abort": {
       "already_configured": "Dieses Gerät ist bereits eingerichtet.",
@@ -79,6 +98,14 @@
       "health": { "name": "Health" },
       "fresh_air": { "name": "Frischluft" },
       "quiet": { "name": "Leise" }
+    }
+  },
+  "selector": {
+    "cipher": {
+      "options": {
+        "ecb": "ECB (ältere Firmware)",
+        "gcm": "GCM (neuere Firmware)"
+      }
     }
   },
   "exceptions": {

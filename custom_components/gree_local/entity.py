@@ -29,12 +29,15 @@ class GreeEntity(CoordinatorEntity[GreeCoordinator]):
     def __init__(self, coordinator: GreeCoordinator) -> None:
         super().__init__(coordinator)
         entry = coordinator.config_entry
-        self._mac = format_mac(entry.data[CONF_MAC])
+        # Identity comes from the entry's unique_id (the MAC at setup time), so
+        # editing the MAC in the reconfigure flow doesn't orphan the device.
+        assert entry.unique_id is not None
+        self._uid = entry.unique_id
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self._mac)},
+            identifiers={(DOMAIN, self._uid)},
             # The MAC connection lets the DHCP "registered_devices" matcher
             # track this unit's IP even if its OUI is not in the manifest.
-            connections={(CONNECTION_NETWORK_MAC, self._mac)},
+            connections={(CONNECTION_NETWORK_MAC, format_mac(entry.data[CONF_MAC]))},
             manufacturer="Gree",
             name=entry.data[CONF_NAME],
             sw_version=entry.data.get(CONF_FIRMWARE),

@@ -26,12 +26,31 @@
         "data_description": {
           "host": "The new IP address or hostname of the unit.",
           "port": "Leave at 7000 unless you forward the port."
+        },
+        "sections": {
+          "connection": {
+            "name": "Connection details",
+            "description": "Normally set up automatically. Change these only if you know the values are wrong.",
+            "data": {
+              "mac": "MAC address",
+              "key": "Device key",
+              "cipher": "Encryption"
+            },
+            "data_description": {
+              "mac": "Address used in protocol messages. Leave empty to use the one the unit reports.",
+              "key": "16-character key from pairing. Leave empty to pair again and get a new key.",
+              "cipher": "ECB for older firmware, GCM for newer firmware. Ignored when pairing again."
+            }
+          }
         }
       }
     },
     "error": {
       "cannot_connect": "No answer from the unit. Check the IP address and that UDP port 7000 is reachable.",
-      "cannot_bind": "The unit answered but refused to pair. Power-cycle it and try again."
+      "cannot_bind": "The unit answered but refused to pair. Power-cycle it and try again.",
+      "invalid_key": "The unit is reachable but did not accept the key. Check the key, encryption and MAC address, or leave the key empty to pair again.",
+      "invalid_key_format": "The device key must be exactly 16 characters.",
+      "invalid_mac": "The MAC address must have 12 hexadecimal digits, e.g. f4:91:1e:12:34:56."
     },
     "abort": {
       "already_configured": "This unit is already configured.",
@@ -79,6 +98,14 @@
       "health": { "name": "Health" },
       "fresh_air": { "name": "Fresh air" },
       "quiet": { "name": "Quiet" }
+    }
+  },
+  "selector": {
+    "cipher": {
+      "options": {
+        "ecb": "ECB (older firmware)",
+        "gcm": "GCM (newer firmware)"
+      }
     }
   },
   "exceptions": {

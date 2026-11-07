@@ -94,7 +94,7 @@ class GreeClimate(GreeEntity, ClimateEntity):
 
     def __init__(self, coordinator) -> None:
         super().__init__(coordinator)
-        self._attr_unique_id = self._mac
+        self._attr_unique_id = self._uid
 
     # -- state -------------------------------------------------------------
 
