@@ -53,11 +53,11 @@ OPTIONS_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): NumberSelector(
             NumberSelectorConfig(
-                min=10,
+                min=1,
                 max=300,
-                step=5,
+                step=1,
                 unit_of_measurement=UnitOfTime.SECONDS,
-                mode=NumberSelectorMode.SLIDER,
+                mode=NumberSelectorMode.BOX,
             )
         ),
     }

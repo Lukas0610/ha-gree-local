@@ -3,7 +3,7 @@
 DOMAIN = "gree_local"
 
 DEFAULT_PORT = 7000
-DEFAULT_SCAN_INTERVAL = 30  # seconds; user-adjustable in the options flow
+DEFAULT_SCAN_INTERVAL = 5  # seconds; user-adjustable in the options flow (1-300)
 
 CONF_MAC = "mac"
 CONF_KEY = "key"

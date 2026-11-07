@@ -10,6 +10,8 @@ each `## [x.y.z]` section becomes the GitHub release notes.
   original name. Existing entries are migrated automatically.
 
 ### Changed
+- Default polling interval is now 5 s (was 30 s); the minimum is 1 s (was 10 s). Units with a
+  custom interval keep it.
 - The panel light switch is now a regular control instead of a configuration entity, so it shows up
   in dashboards and under "Controls" on the device page.
 
