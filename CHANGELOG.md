@@ -3,7 +3,7 @@
 All notable changes are documented here. Versions follow [Semantic Versioning](https://semver.org/);
 each `## [x.y.z]` section becomes the GitHub release notes.
 
-## [Unreleased]
+## [0.2.0]
 
 ### Added
 - Renaming the device also renames the integration entry. Clearing the custom name restores the
