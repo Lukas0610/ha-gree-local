@@ -3,7 +3,7 @@
 All notable changes are documented here. Versions follow [Semantic Versioning](https://semver.org/);
 each `## [x.y.z]` section becomes the GitHub release notes.
 
-## [Unreleased]
+## [0.2.1]
 
 ### Added
 - The device page's firmware line also shows the control board version, module ID (MID) and

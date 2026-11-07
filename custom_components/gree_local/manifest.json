@@ -14,5 +14,5 @@
   "issue_tracker": "https://github.com/Lukas0610/ha-gree-local/issues",
   "loggers": ["custom_components.gree_local"],
   "requirements": [],
-  "version": "0.2.0"
+  "version": "0.2.1"
 }
