@@ -67,6 +67,8 @@ weren't exercised against a real HA instance.
   `helpers.service_info.dhcp`, `entry.runtime_data`, `_get_reconfigure_entry`. Raise the minimum
   if you use newer APIs.
 - Manifest keys: `domain`, `name` first, then alphabetical (hassfest enforces this).
+  `categories` (1–3, dot notation for subcategories) is required by Marketplace validation; see
+  https://contributors.home-assistant.io/core/integrations/categories/
   `requirements` is empty because HA already ships `cryptography`.
 
 ## Releasing
