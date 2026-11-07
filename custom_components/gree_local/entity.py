@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from typing import Any
+
 from homeassistant.const import CONF_NAME
 from homeassistant.helpers.device_registry import (
     CONNECTION_NETWORK_MAC,
@@ -10,7 +13,15 @@ from homeassistant.helpers.device_registry import (
 )
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import CONF_FIRMWARE, CONF_MAC, DOMAIN, TEMP_SENSOR_OFFSET
+from .const import (
+    CONF_BOARD_VERSION,
+    CONF_FIRMWARE,
+    CONF_HID,
+    CONF_MAC,
+    CONF_MID,
+    DOMAIN,
+    TEMP_SENSOR_OFFSET,
+)
 from .coordinator import GreeCoordinator
 
 
@@ -19,6 +30,23 @@ def decode_temperature(raw: int | None) -> int | None:
     if not raw:
         return None  # units without that sensor report 0
     return raw - TEMP_SENSOR_OFFSET if raw > TEMP_SENSOR_OFFSET else raw
+
+
+def firmware_version(data: Mapping[str, Any]) -> str | None:
+    """Device page "Firmware" line, e.g. "V1.21 (Board 1.0.4, MID 10001, HID 3620...V1.0.4.bin)"."""
+    details = [
+        f"{label} {data[conf]}"
+        for label, conf in (
+            ("Board", CONF_BOARD_VERSION),
+            ("MID", CONF_MID),
+            ("HID", CONF_HID),
+        )
+        if data.get(conf)
+    ]
+    version = data.get(CONF_FIRMWARE)
+    if not details:
+        return version
+    return f"{version or '?'} ({', '.join(details)})"
 
 
 class GreeEntity(CoordinatorEntity[GreeCoordinator]):
@@ -40,7 +68,7 @@ class GreeEntity(CoordinatorEntity[GreeCoordinator]):
             connections={(CONNECTION_NETWORK_MAC, format_mac(entry.data[CONF_MAC]))},
             manufacturer="Gree",
             name=entry.data[CONF_NAME],
-            sw_version=entry.data.get(CONF_FIRMWARE),
+            sw_version=firmware_version(entry.data),
         )
 
     def _value(self, param: str) -> int | None:

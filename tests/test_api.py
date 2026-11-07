@@ -26,7 +26,13 @@ class FakeGree(asyncio.DatagramProtocol):
     def __init__(self, cipher_name: str) -> None:
         self.generic = CIPHERS[cipher_name](GENERIC_KEYS[cipher_name])
         self.device = CIPHERS[cipher_name](DEVICE_KEY)
-        self.state = {"Pow": 0, "Mod": 1, "SetTem": 24, "TemSen": 63}
+        self.state = {
+            "Pow": 0,
+            "Mod": 1,
+            "SetTem": 24,
+            "TemSen": 63,
+            "hid": "362001000967V1.0.4.bin",
+        }
         self.binds = 0
 
     def connection_made(self, transport):
@@ -35,7 +41,7 @@ class FakeGree(asyncio.DatagramProtocol):
     def datagram_received(self, data, addr):
         msg = json.loads(data)
         if msg["t"] == "scan":
-            body = {"t": "dev", "mac": MAC, "name": "Fake", "ver": "V1.0"}
+            body = {"t": "dev", "mac": MAC, "name": "Fake", "ver": "V1.0", "mid": "10001"}
             cipher = self.generic
         else:
             cipher = self.generic if msg["i"] == 1 else self.device
@@ -99,6 +105,36 @@ def test_stored_key_skips_scan_and_bind():
             )
             assert await client.status(["Mod"]) == {"Mod": 1}
             assert device.binds == 0
+        finally:
+            transport.close()
+
+    asyncio.run(run())
+
+
+def test_firmware_reads_scan_and_hid_status_column():
+    async def run():
+        transport, device, port = await _start("gcm")
+        try:
+            client = GreeClient("127.0.0.1", port, timeout=0.3, retries=0)
+            assert await client.firmware() == {
+                "ver": "V1.0",
+                "mid": "10001",
+                "hid": "362001000967V1.0.4.bin",  # not in scan: from the status column
+                "board_version": "1.0.4",
+            }
+        finally:
+            transport.close()
+
+    asyncio.run(run())
+
+
+def test_scan_keeps_configured_mac():
+    async def run():
+        transport, device, port = await _start("ecb")
+        try:
+            client = GreeClient("127.0.0.1", port, mac="f4911e0000ff", timeout=0.3, retries=0)
+            await client.scan()
+            assert client.mac == "f4911e0000ff"
         finally:
             transport.close()
 

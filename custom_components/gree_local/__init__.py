@@ -15,8 +15,18 @@ from homeassistant.const import (
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers import device_registry as dr
 
-from .api import GreeClient
-from .const import CONF_CIPHER, CONF_KEY, CONF_MAC, DEFAULT_PORT, DEFAULT_SCAN_INTERVAL
+from .api import GreeClient, GreeError
+from .const import (
+    CONF_BOARD_VERSION,
+    CONF_CIPHER,
+    CONF_FIRMWARE,
+    CONF_HID,
+    CONF_KEY,
+    CONF_MAC,
+    CONF_MID,
+    DEFAULT_PORT,
+    DEFAULT_SCAN_INTERVAL,
+)
 from .coordinator import GreeConfigEntry, GreeCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -35,6 +45,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: GreeConfigEntry) -> bool
     )
     coordinator = GreeCoordinator(hass, entry, client)
     await coordinator.async_config_entry_first_refresh()
+    # Before the platforms: entities build their device info from entry data.
+    await _async_refresh_firmware(hass, entry, client)
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))
@@ -46,6 +58,28 @@ async def async_setup_entry(hass: HomeAssistant, entry: GreeConfigEntry) -> bool
         )
     )
     return True
+
+
+async def _async_refresh_firmware(
+    hass: HomeAssistant, entry: GreeConfigEntry, client: GreeClient
+) -> None:
+    """Store the unit's current firmware details (they change with OTA updates)."""
+    try:
+        fw = await client.firmware()
+    except GreeError as err:
+        _LOGGER.debug("Keeping stored firmware details for %s: %s", client.host, err)
+        return
+    updates = {
+        conf: fw.get(field)
+        for field, conf in (
+            ("ver", CONF_FIRMWARE),
+            ("mid", CONF_MID),
+            ("hid", CONF_HID),
+            ("board_version", CONF_BOARD_VERSION),
+        )
+    }
+    if any(entry.data.get(conf) != value for conf, value in updates.items()):
+        hass.config_entries.async_update_entry(entry, data={**entry.data, **updates})
 
 
 async def async_migrate_entry(hass: HomeAssistant, entry: GreeConfigEntry) -> bool:

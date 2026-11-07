@@ -47,6 +47,12 @@ weren't exercised against a real HA instance.
 - `SetTem` is always Celsius on the wire. `TemSen`/`OutEnvTem` are offset by +40 on most firmware
   (`decode_temperature`). A value of 0 means "no sensor".
 - `SwUpDn`: 0 default, 1 full swing, 2–6 fixed positions, 7–11 partial swing.
+- Firmware (`GreeClient.firmware()`, same logic as `../greectl/greectl.py fw`): `ver` and `mid`
+  come from the scan reply. `hid` comes from the scan or, on many units, only from the `hid`
+  status column. The board version is parsed from `hid` (`...V1.0.4.bin` → `1.0.4`).
+  `__init__.py` refreshes these into entry data on every setup, and `entity.firmware_version()`
+  combines them into the device's `sw_version`.
+- `scan()` only fills `client.mac` if it is unset. It must not overwrite a configured MAC.
 - Requests are serialized with a lock, and each one retries `retries` times on timeout.
 
 ## Conventions and invariants
@@ -73,7 +79,8 @@ weren't exercised against a real HA instance.
   listener in `__init__.py`). The device's own name comes from `entry.data[CONF_NAME]`, **never
   from `entry.title`**, so clearing the custom name can revert the title to the original.
 - Config entry version is 1.2 (`MINOR_VERSION` in `config_flow.py`). Bump the minor version and
-  extend `async_migrate_entry` whenever stored entry data changes shape.
+  extend `async_migrate_entry` whenever a **required** entry data key is added or changed.
+  Optional keys read with `.get()` (like the firmware details) don't need a migration.
 - Minimum HA version is `2025.2.0` (`hacs.json`). APIs in use: `AddConfigEntryEntitiesCallback`,
   `helpers.service_info.dhcp`, `entry.runtime_data`, `_get_reconfigure_entry`. Raise the minimum
   if you use newer APIs.

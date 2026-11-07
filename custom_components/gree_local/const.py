@@ -8,7 +8,11 @@ DEFAULT_SCAN_INTERVAL = 5  # seconds; user-adjustable in the options flow (1-300
 CONF_MAC = "mac"
 CONF_KEY = "key"
 CONF_CIPHER = "cipher"
-CONF_FIRMWARE = "firmware"
+CONF_FIRMWARE = "firmware"  # "ver" from scan: Wi-Fi module firmware
+# Optional firmware details, refreshed from the unit on every setup.
+CONF_MID = "mid"
+CONF_HID = "hid"
+CONF_BOARD_VERSION = "board_version"
 
 # Columns requested on every poll. Units silently return 0 for unsupported ones.
 STATUS_COLUMNS = [

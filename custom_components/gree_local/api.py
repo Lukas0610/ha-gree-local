@@ -12,6 +12,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import json
+import re
 from typing import Any
 
 from cryptography.exceptions import InvalidTag
@@ -205,7 +206,8 @@ class GreeClient:
         mac = info.get("mac") or reply.get("cid")
         if not mac:
             raise GreeProtocolError("scan reply contains no MAC address")
-        self.mac = mac
+        # Keep an explicitly configured MAC (e.g. a sub-unit's); only fill a missing one.
+        self.mac = self.mac or mac
         return info
 
     async def bind(self) -> EcbCipher | GcmCipher:
@@ -252,3 +254,25 @@ class GreeClient:
         if reply.get("r", 200) != 200:
             raise GreeProtocolError(f"command rejected: {reply}")
         return dict(zip(reply.get("opt", []), reply.get("p") or reply.get("val") or []))
+
+    async def firmware(self) -> dict[str, str]:
+        """Return the firmware details the unit reports.
+
+        Keys (each only if available): "ver" (Wi-Fi module firmware), "mid"
+        (module ID), "hid" (control board firmware image) and "board_version"
+        (parsed from hid, e.g. "...V1.0.4.bin" -> "1.0.4").
+        """
+        info = await self.scan()
+        fw = {k: str(info[k]) for k in ("ver", "mid", "hid") if info.get(k) not in (None, "")}
+        if "hid" not in fw:
+            # Many units only report hid as a status column. Scan data stays
+            # useful even if this fails, so don't let it raise.
+            try:
+                hid = (await self.status(["hid"])).get("hid")
+            except GreeError:
+                hid = None
+            if isinstance(hid, str) and hid:
+                fw["hid"] = hid
+        if "hid" in fw and (match := re.search(r"V(\d+(?:\.\d+)+)\.bin$", fw["hid"])):
+            fw["board_version"] = match.group(1)
+        return fw

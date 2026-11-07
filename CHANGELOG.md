@@ -3,6 +3,16 @@
 All notable changes are documented here. Versions follow [Semantic Versioning](https://semver.org/);
 each `## [x.y.z]` section becomes the GitHub release notes.
 
+## [Unreleased]
+
+### Added
+- The device page's firmware line also shows the control board version, module ID (MID) and
+  control board firmware image (HID). Firmware details are refreshed on every start, so OTA
+  updates show up.
+
+### Fixed
+- A MAC address edited in "Connection details" is no longer replaced by the one the unit reports.
+
 ## [0.2.0]
 
 ### Added
