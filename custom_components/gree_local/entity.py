@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from homeassistant.const import CONF_NAME
 from homeassistant.helpers.device_registry import (
     CONNECTION_NETWORK_MAC,
     DeviceInfo,
@@ -35,7 +36,7 @@ class GreeEntity(CoordinatorEntity[GreeCoordinator]):
             # track this unit's IP even if its OUI is not in the manifest.
             connections={(CONNECTION_NETWORK_MAC, self._mac)},
             manufacturer="Gree",
-            name=entry.title,
+            name=entry.data[CONF_NAME],
             sw_version=entry.data.get(CONF_FIRMWARE),
         )
 

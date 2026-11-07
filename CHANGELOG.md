@@ -5,6 +5,10 @@ each `## [x.y.z]` section becomes the GitHub release notes.
 
 ## [Unreleased]
 
+### Added
+- Renaming the device also renames the integration entry. Clearing the custom name restores the
+  original name. Existing entries are migrated automatically.
+
 ### Changed
 - The panel light switch is now a regular control instead of a configuration entity, so it shows up
   in dashboards and under "Controls" on the device page.

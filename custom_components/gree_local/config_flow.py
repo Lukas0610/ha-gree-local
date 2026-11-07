@@ -12,7 +12,13 @@ from homeassistant.config_entries import (
     ConfigFlowResult,
     OptionsFlow,
 )
-from homeassistant.const import CONF_HOST, CONF_PORT, CONF_SCAN_INTERVAL, UnitOfTime
+from homeassistant.const import (
+    CONF_HOST,
+    CONF_NAME,
+    CONF_PORT,
+    CONF_SCAN_INTERVAL,
+    UnitOfTime,
+)
 from homeassistant.core import callback
 from homeassistant.helpers.device_registry import format_mac
 from homeassistant.helpers.selector import (
@@ -72,13 +78,17 @@ async def _probe(host: str, port: int) -> tuple[dict[str, Any], str]:
         CONF_CIPHER: cipher.name,
         CONF_FIRMWARE: info.get("ver"),
     }
-    return data, info.get("name") or f"Gree {client.mac[-6:]}"
+    title = info.get("name") or f"Gree {client.mac[-6:]}"
+    # Original device name; the entry title follows user renames of the device.
+    data[CONF_NAME] = title
+    return data, title
 
 
 class GreeLocalConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Gree Local."""
 
     VERSION = 1
+    MINOR_VERSION = 2  # 1.2: CONF_NAME stored in entry data
 
     @staticmethod
     @callback

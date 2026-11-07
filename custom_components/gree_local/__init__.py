@@ -3,13 +3,23 @@
 from __future__ import annotations
 
 from datetime import timedelta
+import logging
 
-from homeassistant.const import CONF_HOST, CONF_PORT, CONF_SCAN_INTERVAL, Platform
-from homeassistant.core import HomeAssistant
+from homeassistant.const import (
+    CONF_HOST,
+    CONF_NAME,
+    CONF_PORT,
+    CONF_SCAN_INTERVAL,
+    Platform,
+)
+from homeassistant.core import Event, HomeAssistant, callback
+from homeassistant.helpers import device_registry as dr
 
 from .api import GreeClient
 from .const import CONF_CIPHER, CONF_KEY, CONF_MAC, DEFAULT_PORT, DEFAULT_SCAN_INTERVAL
 from .coordinator import GreeConfigEntry, GreeCoordinator
+
+_LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = [Platform.CLIMATE, Platform.SENSOR, Platform.SWITCH]
 
@@ -28,7 +38,48 @@ async def async_setup_entry(hass: HomeAssistant, entry: GreeConfigEntry) -> bool
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))
+    entry.async_on_unload(
+        hass.bus.async_listen(
+            dr.EVENT_DEVICE_REGISTRY_UPDATED,
+            _async_device_renamed_listener(hass, entry),
+            event_filter=_is_device_rename,
+        )
+    )
     return True
+
+
+async def async_migrate_entry(hass: HomeAssistant, entry: GreeConfigEntry) -> bool:
+    """Migrate old config entries."""
+    if entry.version > 1:
+        return False  # downgrade from a future major version
+    if entry.minor_version < 2:
+        # 1.2: the device name is stored separately so the title can follow renames.
+        hass.config_entries.async_update_entry(
+            entry, data={**entry.data, CONF_NAME: entry.title}, minor_version=2
+        )
+    _LOGGER.debug("Migrated %s to version %s.%s", entry.title, entry.version, entry.minor_version)
+    return True
+
+
+@callback
+def _is_device_rename(event_data: dr.EventDeviceRegistryUpdatedData) -> bool:
+    return event_data["action"] == "update" and "name_by_user" in event_data["changes"]
+
+
+def _async_device_renamed_listener(hass: HomeAssistant, entry: GreeConfigEntry):
+    """Keep the config entry title in sync with the device's user-given name."""
+
+    @callback
+    def _async_device_renamed(event: Event[dr.EventDeviceRegistryUpdatedData]) -> None:
+        device = dr.async_get(hass).async_get(event.data["device_id"])
+        if device is None or entry.entry_id not in device.config_entries:
+            return
+        # Clearing the custom name reverts the title to the original device name.
+        title = device.name_by_user or entry.data[CONF_NAME]
+        if title != entry.title:
+            hass.config_entries.async_update_entry(entry, title=title)
+
+    return _async_device_renamed
 
 
 async def _async_options_updated(hass: HomeAssistant, entry: GreeConfigEntry) -> None:

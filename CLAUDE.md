@@ -62,7 +62,12 @@ weren't exercised against a real HA instance.
 - Commands go through `coordinator.async_send(params)`. It applies the change optimistically,
   so don't call `async_request_refresh()` after it.
 - The update listener in `__init__.py` only changes the polling interval. It also fires when the
-  coordinator saves a new key, so it must **not** reload the entry.
+  coordinator saves a new key or the title changes, so it must **not** reload the entry.
+- The entry title follows the device's user-given name (`name_by_user`, via a device registry
+  listener in `__init__.py`). The device's own name comes from `entry.data[CONF_NAME]`, **never
+  from `entry.title`**, so clearing the custom name can revert the title to the original.
+- Config entry version is 1.2 (`MINOR_VERSION` in `config_flow.py`). Bump the minor version and
+  extend `async_migrate_entry` whenever stored entry data changes shape.
 - Minimum HA version is `2025.2.0` (`hacs.json`). APIs in use: `AddConfigEntryEntitiesCallback`,
   `helpers.service_info.dhcp`, `entry.runtime_data`, `_get_reconfigure_entry`. Raise the minimum
   if you use newer APIs.
