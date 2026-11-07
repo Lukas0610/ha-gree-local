@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
-from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
@@ -22,9 +21,7 @@ class GreeSwitchDescription(SwitchEntityDescription):
 
 
 SWITCHES = (
-    GreeSwitchDescription(
-        key="light", translation_key="light", param="Lig", entity_category=EntityCategory.CONFIG
-    ),
+    GreeSwitchDescription(key="light", translation_key="light", param="Lig"),
     GreeSwitchDescription(key="xfan", translation_key="xfan", param="Blo"),
     GreeSwitchDescription(key="health", translation_key="health", param="Health"),
     GreeSwitchDescription(key="fresh_air", translation_key="fresh_air", param="Air"),

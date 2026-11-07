@@ -3,6 +3,15 @@
 All notable changes are documented here. Versions follow [Semantic Versioning](https://semver.org/);
 each `## [x.y.z]` section becomes the GitHub release notes.
 
+## [Unreleased]
+
+### Changed
+- The panel light switch is now a regular control instead of a configuration entity, so it shows up
+  in dashboards and under "Controls" on the device page.
+
+### Fixed
+- Added the integration category required by the Marketplace validation.
+
 ## [0.1.0]
 
 ### Added
