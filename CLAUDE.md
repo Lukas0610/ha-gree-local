@@ -104,3 +104,8 @@ weren't exercised against a real HA instance.
   then run **Actions → Release**. The workflow validates, refuses existing tags or missing
   changelog sections, and marks `aN`/`bN`/`rcN`/`devN` versions as pre-releases.
 - Never edit or move a published tag. Fix things in a new patch release.
+- **Assume a version is released as soon as its bump commit exists** ("Release x.y.z"), even if
+  no tag is visible locally. After that, its manifest version and its `CHANGELOG.md` section are
+  frozen: don't amend the bump commit or edit that section. Later changes go under a new
+  `## [Unreleased]` section at the top of the changelog, which the next bump renames to
+  `## [x.y.z]`.
