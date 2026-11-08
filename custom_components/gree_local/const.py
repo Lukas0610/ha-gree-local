@@ -4,7 +4,7 @@ DOMAIN = "gree_local"
 
 DEFAULT_PORT = 7000
 # Polling options (options flow). Intervals are milliseconds, the duration is seconds.
-DEFAULT_SCAN_INTERVAL = 5000  # CONF_SCAN_INTERVAL, 500-60000 ms (seconds before entry 1.3)
+DEFAULT_SCAN_INTERVAL = 2500  # CONF_SCAN_INTERVAL, 500-60000 ms (seconds before entry 1.3)
 MIN_SCAN_INTERVAL = 500
 MAX_SCAN_INTERVAL = 60000
 # Hot path: poll faster for a while after a command, so follow-up changes
@@ -14,7 +14,7 @@ DEFAULT_FAST_POLL_INTERVAL = 250  # ms, 100-1000
 MIN_FAST_POLL_INTERVAL = 100
 MAX_FAST_POLL_INTERVAL = 1000
 CONF_FAST_POLL_DURATION = "fast_poll_duration"
-DEFAULT_FAST_POLL_DURATION = 10  # s, 0-300; 0 disables the hot path
+DEFAULT_FAST_POLL_DURATION = 5  # s, 0-300; 0 disables the hot path
 MAX_FAST_POLL_DURATION = 300
 
 CONF_MAC = "mac"

@@ -3,6 +3,12 @@
 All notable changes are documented here. Versions follow [Semantic Versioning](https://semver.org/);
 each `## [x.y.z]` section becomes the GitHub release notes.
 
+## [Unreleased]
+
+### Changed
+- Default polling interval is now 2500 ms (was 5000 ms) and fast polling after a change lasts
+  5 s by default (was 10 s). Units with custom polling options keep them.
+
 ## [0.3.0]
 
 ### Added
