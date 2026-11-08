@@ -3,7 +3,7 @@
 All notable changes are documented here. Versions follow [Semantic Versioning](https://semver.org/);
 each `## [x.y.z]` section becomes the GitHub release notes.
 
-## [Unreleased]
+## [0.3.0]
 
 ### Added
 - Fast polling after a change: for a configurable time after you change a setting (default 10 s,
