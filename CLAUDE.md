@@ -72,14 +72,21 @@ weren't exercised against a real HA instance.
 - Reconfigure verifies before saving: scan (must match unique_id unless the MAC was edited), then
   a status request with the given key, or a fresh bind if the key field is empty.
 - Commands go through `coordinator.async_send(params)`. It applies the change optimistically,
-  so don't call `async_request_refresh()` after it.
-- The update listener in `__init__.py` only changes the polling interval. It also fires when the
+  and starts the fast-poll window (`fast_poll_duration` s at `fast_poll_interval` ms), so don't
+  call `async_request_refresh()` after it.
+- The coordinator runs with `update_interval=None` and schedules polls itself
+  (`async_call_later` → `async_refresh()`), because `DataUpdateCoordinator._schedule_refresh`
+  truncates to whole seconds and polls back-to-back at sub-second intervals. Don't set
+  `update_interval`. Option units: `scan_interval` and `fast_poll_interval` in ms,
+  `fast_poll_duration` in s.
+- The update listener in `__init__.py` only re-reads the polling options. It also fires when the
   coordinator saves a new key or the title changes, so it must **not** reload the entry.
 - The entry title follows the device's user-given name (`name_by_user`, via a device registry
   listener in `__init__.py`). The device's own name comes from `entry.data[CONF_NAME]`, **never
   from `entry.title`**, so clearing the custom name can revert the title to the original.
-- Config entry version is 1.2 (`MINOR_VERSION` in `config_flow.py`). Bump the minor version and
-  extend `async_migrate_entry` whenever a **required** entry data key is added or changed.
+- Config entry version is 1.3 (`MINOR_VERSION` in `config_flow.py`; 1.3 converted
+  `scan_interval` from seconds to ms). Bump the minor version and extend `async_migrate_entry`
+  whenever a **required** entry data key is added or changed, or a stored option changes meaning.
   Optional keys read with `.get()` (like the firmware details) don't need a migration.
 - Minimum HA version is `2025.2.0` (`hacs.json`). APIs in use: `AddConfigEntryEntitiesCallback`,
   `helpers.service_info.dhcp`, `entry.runtime_data`, `_get_reconfigure_entry`. Raise the minimum

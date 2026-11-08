@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
 import logging
 
 from homeassistant.const import (
@@ -25,7 +24,7 @@ from .const import (
     CONF_MAC,
     CONF_MID,
     DEFAULT_PORT,
-    DEFAULT_SCAN_INTERVAL,
+    MIN_SCAN_INTERVAL,
 )
 from .coordinator import GreeConfigEntry, GreeCoordinator
 
@@ -49,6 +48,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: GreeConfigEntry) -> bool
     await _async_refresh_firmware(hass, entry, client)
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    coordinator.async_start_polling()
+    entry.async_on_unload(coordinator.async_stop_polling)
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))
     entry.async_on_unload(
         hass.bus.async_listen(
@@ -91,6 +92,14 @@ async def async_migrate_entry(hass: HomeAssistant, entry: GreeConfigEntry) -> bo
         hass.config_entries.async_update_entry(
             entry, data={**entry.data, CONF_NAME: entry.title}, minor_version=2
         )
+    if entry.minor_version < 3:
+        # 1.3: the polling interval is stored in milliseconds. Old values were
+        # seconds (1-300); anything below the new 500 ms minimum must be seconds.
+        options = dict(entry.options)
+        interval = options.get(CONF_SCAN_INTERVAL)
+        if interval is not None and interval < MIN_SCAN_INTERVAL:
+            options[CONF_SCAN_INTERVAL] = max(int(interval * 1000), MIN_SCAN_INTERVAL)
+        hass.config_entries.async_update_entry(entry, options=options, minor_version=3)
     _LOGGER.debug("Migrated %s to version %s.%s", entry.title, entry.version, entry.minor_version)
     return True
 
@@ -117,10 +126,10 @@ def _async_device_renamed_listener(hass: HomeAssistant, entry: GreeConfigEntry):
 
 
 async def _async_options_updated(hass: HomeAssistant, entry: GreeConfigEntry) -> None:
-    """Apply a new polling interval from the options flow."""
-    entry.runtime_data.update_interval = timedelta(
-        seconds=entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
-    )
+    """Apply new polling options. Also fires on key/title changes, so never reload."""
+    coordinator = entry.runtime_data
+    if coordinator.apply_options():
+        coordinator.async_reschedule()
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: GreeConfigEntry) -> bool:

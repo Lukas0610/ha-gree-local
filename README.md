@@ -39,7 +39,8 @@ Copy `custom_components/gree_local` into your `config/custom_components/` folder
 3. Either accept the **Discovered** card under **Settings → Devices & services**, or
    select **Add integration → Gree Local** and enter the IP address.
 
-To change the polling interval, open the integration and select **Configure**.
+To change the polling interval, open the integration and select **Configure**. There you can
+also set how long and how fast the unit is polled right after you change a setting.
 To move a unit to a new address manually, select **⋮ → Reconfigure**. The collapsed
 **Connection details** section there shows the MAC address, device key and encryption in use,
 and lets you change them. Leave the key empty to pair the unit again.

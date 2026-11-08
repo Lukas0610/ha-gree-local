@@ -64,10 +64,14 @@
       "init": {
         "title": "Optionen",
         "data": {
-          "scan_interval": "Abfrageintervall"
+          "scan_interval": "Abfrageintervall",
+          "fast_poll_duration": "Dauer der schnellen Abfrage",
+          "fast_poll_interval": "Schnelles Abfrageintervall"
         },
         "data_description": {
-          "scan_interval": "Wie oft der Gerätezustand gelesen wird. Änderungen über die Fernbedienung erscheinen spätestens nach dieser Zeit."
+          "scan_interval": "Wie oft der Gerätezustand gelesen wird. Änderungen über die Fernbedienung erscheinen spätestens nach dieser Zeit.",
+          "fast_poll_duration": "Nachdem du eine Einstellung änderst, wird so lange im schnellen Intervall abgefragt, damit die Reaktion des Geräts schnell sichtbar wird. 0 schaltet die schnelle Abfrage ab.",
+          "fast_poll_interval": "Abfrageintervall direkt nach einer Änderung."
         }
       }
     }

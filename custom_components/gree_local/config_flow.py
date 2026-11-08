@@ -38,12 +38,21 @@ from homeassistant.helpers.service_info.dhcp import DhcpServiceInfo
 from .api import CIPHERS, GreeClient, GreeConnectionError, GreeError
 from .const import (
     CONF_CIPHER,
+    CONF_FAST_POLL_DURATION,
+    CONF_FAST_POLL_INTERVAL,
     CONF_FIRMWARE,
     CONF_KEY,
     CONF_MAC,
+    DEFAULT_FAST_POLL_DURATION,
+    DEFAULT_FAST_POLL_INTERVAL,
     DEFAULT_PORT,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
+    MAX_FAST_POLL_DURATION,
+    MAX_FAST_POLL_INTERVAL,
+    MAX_SCAN_INTERVAL,
+    MIN_FAST_POLL_INTERVAL,
+    MIN_SCAN_INTERVAL,
 )
 
 HOST_SCHEMA = vol.Schema(
@@ -80,16 +89,29 @@ RECONFIGURE_SCHEMA = HOST_SCHEMA.extend(
     }
 )
 
+
+def _number(minimum: int, maximum: int, unit: str) -> NumberSelector:
+    return NumberSelector(
+        NumberSelectorConfig(
+            min=minimum,
+            max=maximum,
+            step=1,
+            unit_of_measurement=unit,
+            mode=NumberSelectorMode.BOX,
+        )
+    )
+
+
 OPTIONS_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): NumberSelector(
-            NumberSelectorConfig(
-                min=1,
-                max=300,
-                step=1,
-                unit_of_measurement=UnitOfTime.SECONDS,
-                mode=NumberSelectorMode.BOX,
-            )
+        vol.Required(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): _number(
+            MIN_SCAN_INTERVAL, MAX_SCAN_INTERVAL, UnitOfTime.MILLISECONDS
+        ),
+        vol.Required(CONF_FAST_POLL_DURATION, default=DEFAULT_FAST_POLL_DURATION): _number(
+            0, MAX_FAST_POLL_DURATION, UnitOfTime.SECONDS
+        ),
+        vol.Required(CONF_FAST_POLL_INTERVAL, default=DEFAULT_FAST_POLL_INTERVAL): _number(
+            MIN_FAST_POLL_INTERVAL, MAX_FAST_POLL_INTERVAL, UnitOfTime.MILLISECONDS
         ),
     }
 )
@@ -170,7 +192,8 @@ class GreeLocalConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Gree Local."""
 
     VERSION = 1
-    MINOR_VERSION = 2  # 1.2: CONF_NAME stored in entry data
+    # 1.2: CONF_NAME stored in entry data. 1.3: polling interval option in ms.
+    MINOR_VERSION = 3
 
     @staticmethod
     @callback
@@ -303,14 +326,22 @@ class GreeLocalConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class GreeLocalOptionsFlow(OptionsFlow):
-    """Polling interval."""
+    """Polling interval and fast polling after commands."""
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         if user_input is not None:
+            # NumberSelector yields floats; store ints.
             return self.async_create_entry(
-                data={CONF_SCAN_INTERVAL: int(user_input[CONF_SCAN_INTERVAL])}
+                data={
+                    key: int(user_input[key])
+                    for key in (
+                        CONF_SCAN_INTERVAL,
+                        CONF_FAST_POLL_DURATION,
+                        CONF_FAST_POLL_INTERVAL,
+                    )
+                }
             )
         return self.async_show_form(
             step_id="init",

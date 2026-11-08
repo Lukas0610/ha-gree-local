@@ -3,6 +3,17 @@
 All notable changes are documented here. Versions follow [Semantic Versioning](https://semver.org/);
 each `## [x.y.z]` section becomes the GitHub release notes.
 
+## [Unreleased]
+
+### Added
+- Fast polling after a change: for a configurable time after you change a setting (default 10 s,
+  0 turns it off), the unit is polled at a faster interval (default 250 ms, 100–1000 ms), so its
+  reaction shows up almost immediately.
+
+### Changed
+- The polling interval is now set in milliseconds (500–60000 ms, default 5000 ms). Existing
+  intervals are converted from seconds automatically.
+
 ## [0.2.1]
 
 ### Added

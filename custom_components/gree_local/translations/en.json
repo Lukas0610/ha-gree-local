@@ -64,10 +64,14 @@
       "init": {
         "title": "Options",
         "data": {
-          "scan_interval": "Polling interval"
+          "scan_interval": "Polling interval",
+          "fast_poll_duration": "Fast polling duration",
+          "fast_poll_interval": "Fast polling interval"
         },
         "data_description": {
-          "scan_interval": "How often to read the unit's state. Changes made with the remote show up after at most this long."
+          "scan_interval": "How often to read the unit's state. Changes made with the remote show up after at most this long.",
+          "fast_poll_duration": "After you change a setting, poll at the fast interval for this long so the unit's reaction shows up quickly. 0 turns fast polling off.",
+          "fast_poll_interval": "Polling interval used right after a change."
         }
       }
     }
